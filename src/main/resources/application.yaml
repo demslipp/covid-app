@@ -2,9 +2,9 @@ spring:
   application:
     name: covid-app-api
   datasource:
-    url: jdbc:postgresql://localhost:54320/postgres
-    username: postgres
-    password: postgres
+    url: jdbc:postgresql://ec2-176-34-105-15.eu-west-1.compute.amazonaws.com:5432/d5i6suu1npqtd2
+    username: uqwfbuqpxqfpjo
+    password: 56a8550f5c193c8bbbc47768c1f8bc76e6e69d438776c7c643f61778cdafbf4e
     hikari:
       maximum-pool-size: 2
 springdoc:
