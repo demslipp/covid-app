@@ -19,7 +19,8 @@ public class ControllerHelper {
     public void handleToken(String header) {
         var token = header.replace("Bearer ", "").trim();
         try {
-            var uuid = authService.getUuidFromToken(token);
+            //var uuid = authService.getUuidFromToken(token);
+            var uuid = token;
             MDC.put("user", uuid);
             log.info("ControllerHelper.obtainToken Request by user with uuid = {}", uuid);
         } catch (HttpCodeException e) {

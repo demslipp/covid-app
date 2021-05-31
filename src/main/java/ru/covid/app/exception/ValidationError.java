@@ -2,7 +2,7 @@ package ru.covid.app.exception;
 
 public enum ValidationError {
 
-    INVALID_ATTACH_REQUEST(400, "Error parsing attach request");
+    SHEET_ID_OR_USER_ID_IS_REQUIRED(400, "User id or sheet id is required to generate qr");
 
     public final int status;
     public final String description;

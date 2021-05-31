@@ -2,8 +2,11 @@ package ru.covid.app.exception;
 
 public enum ApplicationError {
 
-    NOT_FOUND_BY_ID(400, "Task not found error"),
-    ATTACHMENTS_NOT_FOUND(400, "Attachments not found error"),
+    QR_LINK_IS_EXPIRED(400, "Link for getting sheet is expired"),
+    SHEET_NOT_FOUND_BY_QR(400, "Sheet is not found by QR id"),
+    SHEET_NOT_FOUND_BY_USER_ID(400, "Sheet is not found by user id"),
+    SHEET_NOT_FOUND_BY_SHEET_ID(400, "Sheet is not found by sheet id"),
+    CREATING_QR_ERROR(400, "Error while create QR"),
 
     ENTRY_NOT_FOUND_BY_TASK_ID(400, "Entry not found error"),
 

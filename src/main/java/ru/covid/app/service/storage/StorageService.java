@@ -6,12 +6,15 @@ import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
+import ru.covid.app.dto.logic.SheetWithContent;
+import ru.covid.app.dto.storage.DownloadFromStorageMessage;
+import ru.covid.app.dto.storage.UploadToStorageMessage;
+import ru.covid.app.dto.storage.UploadedToStorageMessage;
 
-import java.util.HashMap;
 import java.util.UUID;
 
 @Component
@@ -20,45 +23,34 @@ public class StorageService {
 
     private Storage storage;
 
-    private final String BUCKET_NAME = "";
+    private final String BUCKET_NAME = "covid-app-rus.appspot.com";
 
-    @EventListener
-    public void init(ApplicationReadyEvent event) {
+    @EventListener(ApplicationStartedEvent.class)
+    public void onStartUp() {
         try {
-            var serviceAccount = new ClassPathResource("firebase.json");
-            storage = StorageOptions.newBuilder().
-                    setCredentials(GoogleCredentials.fromStream(serviceAccount.getInputStream())).
-                    setProjectId("YOUR_PROJECT_ID").build().getService();
+            var serviceAccount = new ClassPathResource("service_account_key.json");
+            this.storage = StorageOptions.newBuilder()
+                .setCredentials(GoogleCredentials.fromStream(serviceAccount.getInputStream()))
+                .build()
+                .getService();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
-    public UploadedMessage upload(UploadMessage message) {
+    public UploadedToStorageMessage upload(UploadToStorageMessage message) {
         var sheetId = UUID.randomUUID().toString();
-        var map = new HashMap<String, String>();
-        map.put("firebaseStorageDownloadTokens", sheetId);
-        var bucket = "";
-        var blobId = BlobId.of(bucket, sheetId);
+        var blobId = BlobId.of(BUCKET_NAME, sheetId);
         var blobInfo = BlobInfo.newBuilder(blobId)
-                .setMetadata(map)
-                .setContentType(message.contentType())
-                .build();
+            .setContentType(message.contentType())
+            .build();
         storage.create(blobInfo, message.content());
-        return new UploadedMessage(sheetId, bucket);
+        return new UploadedToStorageMessage(sheetId, BUCKET_NAME);
     }
 
-    public byte[] download(DownloadMessage message) {
-        var blobId = BlobId.of(message.bucket(), message.sheetId);
-        return storage.get(blobId).getContent();
-    }
-
-    public static record UploadMessage(byte[] content, String contentType) {
-    }
-
-    public static record UploadedMessage(String sheetId, String bucket) {
-    }
-
-    public static record DownloadMessage(String sheetId, String bucket) {
+    public SheetWithContent download(DownloadFromStorageMessage message) {
+        var blobId = BlobId.of(message.bucket(), message.sheetId());
+        var blob = storage.get(blobId);
+        return new SheetWithContent(blob.getContent(), blob.getContentType());
     }
 }
