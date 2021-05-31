@@ -36,7 +36,7 @@ import static ru.covid.app.exception.ApplicationError.SHEET_NOT_FOUND_BY_SHEET_I
 public class GenerateQrBySheetIdOperation {
 
     private static final Logger log = LoggerFactory.getLogger(GenerateQrBySheetIdOperation.class);
-    private static final String URL_PATTERN = "http://localhost/api/qr?qrId=%s";
+    private static final String URL_PATTERN = "https://covid-app-api-v1.herokuapp.com/api/qr?qrId=%s";
     private static final TemporalAmount TTL_DELTA = Duration.ofMinutes(60);
 
     private final QrSheetLinkService qrSheetLinkService;
