@@ -80,19 +80,27 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-ui</artifactId>
-            <version>1.5.2</version>
+            <version>1.5.9</version>
         </dependency>
 
-      <dependency>
-        <groupId>com.google.zxing</groupId>
-        <artifactId>core</artifactId>
-        <version>3.4.1</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.zxing</groupId>
-        <artifactId>javase</artifactId>
-        <version>3.4.1</version>
-      </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-data-rest</artifactId>
+            <version>1.5.9</version>
+        </dependency>
+
+
+
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>core</artifactId>
+            <version>3.4.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>javase</artifactId>
+            <version>3.4.1</version>
+        </dependency>
 
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -144,24 +152,25 @@
                         </goals>
                     </execution>
                 </executions>
-              <configuration>
-                <jdbc>
-                  <driver>org.postgresql.Driver</driver>
-                  <url>jdbc:postgresql://ec2-176-34-105-15.eu-west-1.compute.amazonaws.com:5432/d5i6suu1npqtd2</url>
-                  <user>uqwfbuqpxqfpjo</user>
-                  <password>56a8550f5c193c8bbbc47768c1f8bc76e6e69d438776c7c643f61778cdafbf4e</password>
-                </jdbc>
-                <generator>
-                  <database>
-                    <includes>.*</includes>
-                    <inputSchema>public</inputSchema>
-                  </database>
-                  <target>
-                    <packageName>ru.covid.app.jooq</packageName>
-                    <directory>target/generated-sources/jooq/</directory>
-                  </target>
-                </generator>
-              </configuration>
+                <configuration>
+                    <jdbc>
+                        <driver>org.postgresql.Driver</driver>
+                        <url>jdbc:postgresql://ec2-176-34-105-15.eu-west-1.compute.amazonaws.com:5432/d5i6suu1npqtd2
+                        </url>
+                        <user>uqwfbuqpxqfpjo</user>
+                        <password>56a8550f5c193c8bbbc47768c1f8bc76e6e69d438776c7c643f61778cdafbf4e</password>
+                    </jdbc>
+                    <generator>
+                        <database>
+                            <includes>.*</includes>
+                            <inputSchema>public</inputSchema>
+                        </database>
+                        <target>
+                            <packageName>ru.covid.app.jooq</packageName>
+                            <directory>target/generated-sources/jooq/</directory>
+                        </target>
+                    </generator>
+                </configuration>
             </plugin>
         </plugins>
     </build>
