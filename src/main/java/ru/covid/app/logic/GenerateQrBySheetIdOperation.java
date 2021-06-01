@@ -17,26 +17,24 @@ import ru.covid.app.jooq.tables.records.SheetRecord;
 import ru.covid.app.service.db.QrSheetLinkService;
 import ru.covid.app.service.db.SheetService;
 
+import javax.imageio.ImageIO;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAmount;
 import java.util.UUID;
-import javax.imageio.ImageIO;
 
 import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
-import static ru.covid.app.exception.ApplicationError.CREATING_QR_ERROR;
-import static ru.covid.app.exception.ApplicationError.INTERNAL_ERROR;
-import static ru.covid.app.exception.ApplicationError.SHEET_NOT_FOUND_BY_SHEET_ID;
+import static ru.covid.app.exception.ApplicationError.*;
 
 @Component
 @RequiredArgsConstructor
 public class GenerateQrBySheetIdOperation {
 
     private static final Logger log = LoggerFactory.getLogger(GenerateQrBySheetIdOperation.class);
-    private static final String URL_PATTERN = "https://covid-app-api-v1.herokuapp.com/api/qr?qrId=%s";
+    private static final String URL_PATTERN = "https://covid-app-back.herokuapp.com/api/qr?qrId=%s";
     private static final TemporalAmount TTL_DELTA = Duration.ofMinutes(60);
 
     private final QrSheetLinkService qrSheetLinkService;
