@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.covid.app.dto.GenerateQrRequest;
 import ru.covid.app.dto.logic.UploadSheetMessage;
-import ru.covid.app.dto.storage.UploadedToStorageMessage;
 import ru.covid.app.logic.GenerateQrBySheetIdOperation;
 import ru.covid.app.logic.GetSheetByQrOperation;
 import ru.covid.app.logic.GetSheetByUserIdOperation;
@@ -38,14 +37,13 @@ public class CovidAppController {
         description = "Upload new sheet for certain user",
         summary = "Upload sheet"
     )
-    public UploadedToStorageMessage uploadSheet(@RequestBody byte[] sheet,
-                                                @RequestHeader("Authorization") String token,
-                                                @RequestHeader("Content-Type") String contentType) {
+    public void uploadSheet(@RequestBody byte[] sheet,
+                            @RequestHeader("Authorization") String token,
+                            @RequestHeader("Content-Type") String contentType) {
         log.info("Controller.uploadSheet.in");
         helper.handleToken(token);
-        var res =  uploadSheetOperation.process(new UploadSheetMessage(sheet, contentType, MDC.get("user")));
+        uploadSheetOperation.process(new UploadSheetMessage(sheet, contentType, MDC.get("user")));
         log.info("Controller.uploadSheet.out");
-        return res;
     }
 
     @GetMapping("/sheets")
@@ -73,7 +71,9 @@ public class CovidAppController {
         log.info("Controller.getQrBySheetId.in sheetId = {}", sheetId);
         helper.handleToken(token);
         if (isNull(generateQrRequest)) {
-            generateQrRequest = new GenerateQrRequest(ofNullable(sheetId).orElseThrow(SHEET_ID_OR_USER_ID_IS_REQUIRED::exception),
+            generateQrRequest = new GenerateQrRequest(
+                ofNullable(sheetId)
+                    .orElseThrow(SHEET_ID_OR_USER_ID_IS_REQUIRED::exception),
                 MDC.get("user"));
         }
         var sheet = generateQrBySheetIdOperation.process(generateQrRequest);
