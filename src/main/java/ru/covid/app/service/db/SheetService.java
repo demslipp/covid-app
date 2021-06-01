@@ -5,6 +5,7 @@ import org.jooq.DSLContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import ru.covid.app.jooq.tables.QrSheetLink;
 import ru.covid.app.jooq.tables.Sheet;
 import ru.covid.app.jooq.tables.records.SheetRecord;
 
@@ -20,11 +21,13 @@ public class SheetService {
 
     private final Sheet sheetTable = Sheet.SHEET;
 
+    private final QrSheetLink qrSheetLinkTable = QrSheetLink.QR_SHEET_LINK;
+
     public Optional<SheetRecord> findByUserId(String userId) {
         log.info("SheetService.findByUserId.in userId = {}", userId);
         var result = db.selectFrom(sheetTable)
-            .where(sheetTable.USER_ID.equal(userId))
-            .fetchOptional();
+                .where(sheetTable.USER_ID.equal(userId))
+                .fetchOptional();
         log.info("SheetService.findByUserId.out");
         return result;
     }
@@ -32,30 +35,35 @@ public class SheetService {
     public Optional<SheetRecord> findBySheetId(String sheetId) {
         log.info("SheetService.findBySheetId.in sheetId = {}", sheetId);
         var result = db.selectFrom(sheetTable)
-            .where(sheetTable.SHEET_ID.equal(sheetId))
-            .fetchOptional();
+                .where(sheetTable.SHEET_ID.equal(sheetId))
+                .fetchOptional();
         log.info("SheetService.findBySheetId.out");
         return result;
     }
 
     public void insertOnConflictUpdate(SheetRecord sheet) {
         log.info("SheetService.insertOnConflictUpdate.in sheetId = {}", sheet.getSheetId());
+        db.deleteFrom(qrSheetLinkTable)
+                .where(qrSheetLinkTable.USER_ID.equal(sheet.getUserId()))
+                .execute();
+        log.info("SheetService.insertOnConflictUpdate() - expired link deleted");
 
         db.insertInto(sheetTable)
-            .set(sheet)
-            .onConflictOnConstraint(sheetTable.getPrimaryKey())
-            .doUpdate()
-            .set(sheetTable.SHEET_ID, sheet.getSheetId())
-            .where(sheetTable.USER_ID.equal(sheet.getUserId()))
-            .execute();
+                .set(sheet)
+                .onConflictOnConstraint(sheetTable.getPrimaryKey())
+                .doUpdate()
+                .set(sheetTable.SHEET_ID, sheet.getSheetId())
+                .where(sheetTable.USER_ID.equal(sheet.getUserId()))
+                .execute();
+
         log.info("SheetService.insertOnConflictUpdate.out");
     }
 
     public void deleteByUserId(String userId) {
         log.info("SheetService.deleteSheetByUserId.in userId = {}", userId);
         db.deleteFrom(sheetTable)
-            .where(sheetTable.USER_ID.equal(userId))
-            .execute();
+                .where(sheetTable.USER_ID.equal(userId))
+                .execute();
         log.info("SheetService.deleteSheetByUserId.out");
     }
 }

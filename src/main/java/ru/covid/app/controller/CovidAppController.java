@@ -56,7 +56,7 @@ public class CovidAppController {
         return sheet.asResponse();
     }
 
-    @PostMapping("/qr")
+    @GetMapping("/qr/generate")
     @Operation(
             description = "Generate QR for certain sheet by sheetId",
             summary = "Get QR"
