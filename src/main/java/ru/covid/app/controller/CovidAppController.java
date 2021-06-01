@@ -5,18 +5,13 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.covid.app.dto.GenerateQrRequest;
 import ru.covid.app.dto.logic.UploadSheetMessage;
-import ru.covid.app.logic.GenerateQrBySheetIdOperation;
-import ru.covid.app.logic.GetSheetByQrOperation;
-import ru.covid.app.logic.GetSheetByUserIdOperation;
-import ru.covid.app.logic.UploadSheetOperation;
+import ru.covid.app.logic.*;
 
-import static java.util.Objects.isNull;
-import static java.util.Optional.ofNullable;
-import static ru.covid.app.exception.ValidationError.SHEET_ID_OR_USER_ID_IS_REQUIRED;
 
 @RestController
 @RequestMapping("/api")
@@ -31,11 +26,12 @@ public class CovidAppController {
     private final GetSheetByUserIdOperation getSheetByUserIdOperation;
     private final GenerateQrBySheetIdOperation generateQrBySheetIdOperation;
     private final GetSheetByQrOperation getSheetByQrOperation;
+    private final GetSheetIdByUserIdOperation getSheetIdByUserIdOperation;
 
     @PostMapping("/sheets")
     @Operation(
-        description = "Upload new sheet for certain user",
-        summary = "Upload sheet"
+            description = "Upload new sheet for certain user",
+            summary = "Upload sheet"
     )
     public void uploadSheet(@RequestBody byte[] sheet,
                             @RequestHeader("Authorization") String token,
@@ -48,8 +44,8 @@ public class CovidAppController {
 
     @GetMapping("/sheets")
     @Operation(
-        description = "Get certain sheet by sheetId",
-        summary = "Get sheet"
+            description = "Get certain sheet by sheetId",
+            summary = "Get sheet"
     )
     public ResponseEntity<byte[]> getSheetByUserId(@RequestHeader("Authorization") String token) {
         helper.handleToken(token);
@@ -62,32 +58,24 @@ public class CovidAppController {
 
     @PostMapping("/qr")
     @Operation(
-        description = "Generate QR for certain sheet by sheetId",
-        summary = "Get QR"
+            description = "Generate QR for certain sheet by sheetId",
+            summary = "Get QR"
     )
-    public ResponseEntity<byte[]> generateQr(@RequestParam(value = "sheetId", required = false) String sheetId,
-                                             @RequestBody(required = false) GenerateQrRequest generateQrRequest,
-                                             @RequestHeader("Authorization") String token) {
-        log.info("Controller.getQrBySheetId.in sheetId = {}", sheetId);
+    public ResponseEntity<byte[]> generateQr(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         helper.handleToken(token);
-        if (isNull(generateQrRequest)) {
-            generateQrRequest = new GenerateQrRequest(
-                ofNullable(sheetId)
-                    .orElseThrow(SHEET_ID_OR_USER_ID_IS_REQUIRED::exception),
-                MDC.get("user"));
-        }
-        var sheet = generateQrBySheetIdOperation.process(generateQrRequest);
-        log.info("Controller.getQrBySheetId.out");
+        var userId = MDC.get("user");
+        var sheetId = getSheetIdByUserIdOperation.process(userId);
+        var sheet = generateQrBySheetIdOperation.process(new GenerateQrRequest(sheetId, userId));
         return ResponseEntity
-            .ok()
-            .header("Content-Type", "image/png")
-            .body(sheet);
+                .ok()
+                .header("Content-Type", "image/png")
+                .body(sheet);
     }
 
     @GetMapping("/qr")
     @Operation(
-        description = "Get certain sheet by qrId",
-        summary = "Get sheet"
+            description = "Get certain sheet by qrId",
+            summary = "Get sheet"
     )
     public ResponseEntity<byte[]> getSheetByQr(@RequestParam(value = "qrId") String qrId) {
         log.info("Controller.getSheetByQr.in qrId = {}", qrId);
