@@ -23,10 +23,13 @@ public class UploadSheetOperation {
     private final SheetService sheetService;
     private final StorageService storageService;
 
-    public void process(UploadSheetMessage message) {
+    public UploadedToStorageMessage process(UploadSheetMessage message) {
         log.info("UploadSheetOperation.process.in contentType = {}, userId = {}", message.contentType(), message.userId());
         try {
-            internalProcess(message);
+            var res = internalProcess(message);
+            log.info("UploadSheetOperation.process.out");
+            return res;
+
         } catch (HttpCodeException e) {
             log.error("UploadSheetOperation.process.thrown", e);
             throw e;
@@ -34,12 +37,12 @@ public class UploadSheetOperation {
             log.error("UploadSheetOperation.process.thrown", e);
             throw INTERNAL_ERROR.exception(e);
         }
-        log.info("UploadSheetOperation.process.out");
     }
 
-    private void internalProcess(UploadSheetMessage message) {
+    private UploadedToStorageMessage internalProcess(UploadSheetMessage message) {
         var uploadedMessage = storageService.upload(message.toStorage());
         sheetService.insertOnConflictUpdate(constructSheetRecord(message, uploadedMessage));
+        return uploadedMessage;
     }
 
     private SheetRecord constructSheetRecord(UploadSheetMessage uploadSheetMessage, UploadedToStorageMessage uploadedToStorageMessage) {
