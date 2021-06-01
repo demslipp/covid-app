@@ -8,8 +8,6 @@ CREATE TABLE public.sheet
     created   timestamp NOT NULL DEFAULT now()
 );
 
-ALTER TABLE distributors ADD CONSTRAINT dist_id_zipcode_key UNIQUE (dist_id, zipcode);
-
 CREATE TABLE public.qr_sheet_link
 (
     sheet_id    BIGINT REFERENCES public.sheet (id) ON DELETE CASCADE,
