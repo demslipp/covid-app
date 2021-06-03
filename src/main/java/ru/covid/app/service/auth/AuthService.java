@@ -12,6 +12,7 @@ public class AuthService {
 
     public String getUuidFromToken(String token) {
         try {
+
             return firebaseAuth.verifyIdToken(token).getUid();
         } catch (Exception e) {
             throw FIREBASE_INVOCATION_ERROR.exception(e);

@@ -7,11 +7,23 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import ru.covid.app.dto.GenerateQrRequest;
+import ru.covid.app.dto.logic.CountryStatus;
 import ru.covid.app.dto.logic.UploadSheetMessage;
-import ru.covid.app.logic.*;
-
+import ru.covid.app.logic.GenerateQrBySheetIdOperation;
+import ru.covid.app.logic.GetSheetByQrOperation;
+import ru.covid.app.logic.GetSheetByUserIdOperation;
+import ru.covid.app.logic.GetSheetIdByUserIdOperation;
+import ru.covid.app.logic.UploadSheetOperation;
+import ru.covid.app.service.db.CountryStatusService;
 
 @RestController
 @RequestMapping("/api")
@@ -27,6 +39,8 @@ public class CovidAppController {
     private final GenerateQrBySheetIdOperation generateQrBySheetIdOperation;
     private final GetSheetByQrOperation getSheetByQrOperation;
     private final GetSheetIdByUserIdOperation getSheetIdByUserIdOperation;
+
+    private final CountryStatusService countryStatusService;
 
     @PostMapping("/sheets")
     @Operation(
@@ -82,5 +96,25 @@ public class CovidAppController {
         var sheet = getSheetByQrOperation.process(qrId);
         log.info("Controller.getSheetByQr.out");
         return sheet.asResponse();
+    }
+
+    @GetMapping("/country/{country}/status")
+    @Operation(
+        description = "Get covid status of a certain country by its name",
+        summary = "Get country covid status"
+    )
+    public ResponseEntity<CountryStatus> statusByCountryName(@PathVariable(value = "country") String country) {
+        log.info("Controller.statusByCountryName.in country = {}", country);
+        var status = countryStatusService.findByCountryName(country)
+            .map(CountryStatus::fromDb)
+            .map(r ->
+                ResponseEntity
+                    .ok()
+                    .header("Content-Type", "application/json")
+                    .body(r)
+            )
+            .orElse(ResponseEntity.notFound().build());
+        log.info("Controller.statusByCountryName.out");
+        return status;
     }
 }
