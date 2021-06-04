@@ -2,14 +2,14 @@ spring:
   application:
     name: covid-app-api
   datasource:
-    url: jdbc:postgresql://${DATABASE_HOST:ec2-176-34-105-15.eu-west-1.compute.amazonaws.com}:${DATABASE_PORT:5432}/${DATABASE_SCHEMA:d5i6suu1npqtd2}
-    username: ${DATABASE_USERNAME:uqwfbuqpxqfpjo}
-    password: ${DATABASE_SECRET:56a8550f5c193c8bbbc47768c1f8bc76e6e69d438776c7c643f61778cdafbf4e}
+    url: jdbc:postgresql://${DATABASE_HOST:ec2-52-23-40-80.compute-1.amazonaws.com}:${DATABASE_PORT:5432}/${DATABASE_SCHEMA:dcn004gh6dofdu}
+    username: ${DATABASE_USERNAME:ajytwsgqvwfyqw}
+    password: ${DATABASE_SECRET:4d8a59b2c9d8360573444b8a32bfa7b38d2bf6571acde5261bfe7c66251afe25}
     hikari:
       maximum-pool-size: 2
   liquibase:
-    user: ${LIQUIBASE_USERNAME:uqwfbuqpxqfpjo}
-    password: ${LIQUIBASE_PASSWORD:56a8550f5c193c8bbbc47768c1f8bc76e6e69d438776c7c643f61778cdafbf4e}
+    user: ${LIQUIBASE_USERNAME:ajytwsgqvwfyqw}
+    password: ${LIQUIBASE_PASSWORD:4d8a59b2c9d8360573444b8a32bfa7b38d2bf6571acde5261bfe7c66251afe25}
     change-log: 'classpath:db-migrations/changelog.xml'
 springdoc:
   swagger-ui:

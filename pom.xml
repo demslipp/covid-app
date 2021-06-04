@@ -153,10 +153,10 @@
                 <configuration>
                     <jdbc>
                         <driver>org.postgresql.Driver</driver>
-                        <url>jdbc:postgresql://ec2-176-34-105-15.eu-west-1.compute.amazonaws.com:5432/d5i6suu1npqtd2
+                        <url>jdbc:postgresql://ec2-52-23-40-80.compute-1.amazonaws.com:5432/dcn004gh6dofdu
                         </url>
-                        <user>uqwfbuqpxqfpjo</user>
-                        <password>56a8550f5c193c8bbbc47768c1f8bc76e6e69d438776c7c643f61778cdafbf4e</password>
+                        <user>ajytwsgqvwfyqw</user>
+                        <password>4d8a59b2c9d8360573444b8a32bfa7b38d2bf6571acde5261bfe7c66251afe25</password>
                     </jdbc>
                     <generator>
                         <database>
